@@ -1,18 +1,24 @@
-{% extends "layout.html" %}
-{% block title %}To-Do App{% endblock %}
+{% extends "layout.html" %} {% block title %}To-Do App{% endblock %} {% block
+content %}
+<div class="jumbotron">
+  <h1 class="display-4">To-Do App</h1>
+  <p class="lead">Just another to-do app.</p>
+</div>
 
-{% block content %}
-  <div class="jumbotron">
-    <h1 class="display-4">To-Do App</h1>
-    <p class="lead">Just another to-do app.</p>
+<div class="row">
+  <div class="col-md-12">
+    <h2>Items</h2>
+    <ul class="list-group mb-4">
+      {% for item in items %}
+      <li>{{item.title}}</li>
+      {% endfor %}
+    </ul>
+    <h3>Submit new todo</h3>
+    <form>
+      <label for="title">Title:</label><br />
+      <input type="text" id="title" name="title" /><br />
+      <button formaction="/todos/submit" formmethod="post">Submit</button>
+    </form>
   </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <h2>Items</h2>
-      <ul class="list-group mb-4">
-        <!-- List the todo items here -->
-      </ul>
-    </div>
-  </div>
+</div>
 {% endblock %}
