@@ -7,12 +7,16 @@ content %}
 
 <div class="row">
   <div class="col-md-12">
-    <h2>Search for a board</h2>
-    <form>
-      <label for="title">Title:</label><br />
-      <input type="text" id="title" name="title" required /><br />
-      <button formaction="/search/boards" formmethod="post">Submit</button>
-    </form>
+    <h2>Boards</h2>
+    {% if boards %}
+    <ul>
+      {% for board in boards %}
+      <li><a href="/board/{{board.id}}">{{board.name}}</a></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No boards found</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
