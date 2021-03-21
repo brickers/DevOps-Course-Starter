@@ -1,0 +1,22 @@
+{% extends "layout.html" %} {% block title %}To-Do App{% endblock %} {% block
+content %}
+<div class="jumbotron">
+  <h1 class="display-4">To-Do App</h1>
+  <p class="lead">Just another to-do app.</p>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h2>{{board.name}}</h2>
+    {% if board.cards %}
+    <ul>
+      {% for card in board.cards %}
+      <li>{{card.name}}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No cards found</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

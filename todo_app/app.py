@@ -35,9 +35,6 @@ auth_header = {
 # results will be a list of matching boards, with a link to /board/id
 # /board/id will show our todos
 
-# @app.route("/board/<id>")
-# def show_board(id):
-
 
 @app.route('/search/boards', methods=['POST'])
 def search_boards():
@@ -53,7 +50,23 @@ def search_boards():
         except:
             return redirect("/")
 
-    # pparse boards for search results
-    # if exaclty one then redirect to board page
-    # if more than one then redirect to board list page
-    # if zero then redirect to search results (somehow show message saying nothing found)
+
+@app.route("/board/<id>")
+def show_board(id):
+    board_url = BASE_URL + f"/1/boards/{id}"
+    board_response = requests.get(board_url, headers=auth_header)
+    if board_response.ok:
+        try:
+            board = board_response.json()
+            cards_url = BASE_URL + f"/1/boards/{id}/cards"
+            cards_response = requests.get(cards_url, headers=auth_header)
+            if cards_response.ok:
+                try:
+                    board["cards"] = cards_response.json()
+                    return render_template("board.html", board=board)
+                except:
+                    return redirect("/")
+        except:
+            return redirect("/")
+    else:
+        return redirect("/")
