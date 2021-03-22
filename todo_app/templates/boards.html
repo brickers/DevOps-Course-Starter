@@ -1,17 +1,17 @@
 {% extends "layout.html" %} {% block title %}To-Do App{% endblock %} {% block
 content %}
-<div class="jumbotron">
-  <h1 class="display-4">To-Do App</h1>
-  <p class="lead">Just another to-do app.</p>
-</div>
 
 <div class="row">
   <div class="col-md-12">
-    <h2>Boards</h2>
+    <h2 class="text-xl my-8">Boards</h2>
     {% if boards %}
     <ul>
       {% for board in boards %}
-      <li><a href="/board/{{board.id}}">{{board.name}}</a></li>
+      <li
+        ><a href="/board/{{board.id}}" class="text-green-500 hover:underline"
+          >{{board.name}}</a
+        ></li
+      >
       {% endfor %}
     </ul>
     {% else %}

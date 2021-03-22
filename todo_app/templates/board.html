@@ -1,22 +1,18 @@
 {% extends "layout.html" %} {% block title %}To-Do App{% endblock %} {% block
 content %}
-<div class="jumbotron">
-  <h1 class="display-4">To-Do App</h1>
-  <p class="lead">Just another to-do app.</p>
-</div>
 
 <div class="row">
   <div class="col-md-12">
-    <h2>{{board.name}}</h2>
+    <h2 class="text-xl my-8">{{board.name}}</h2>
     {% if board.lists %}
-    <ul>
+    <ul class="flex flex-row -mx-4">
       {% for currentlist in board.lists %}
-      <li>
-        <h3>{{currentlist.name}}</h3>
+      <li class="m-4">
+        <h3 class="mb-2">{{currentlist.name}}</h3>
         {% if currentlist.cards %}
         <ul>
           {% for card in currentlist.cards %}
-          <li
+          <li class="border rounded p-4 mb-2"
             ><h4>{{card.name}}</h4>
             <div>
               <ul>
@@ -27,7 +23,9 @@ content %}
                     method="post"
                     action="/card/{{card.id}}/list/{{destinationlist.id}}"
                   >
-                    <button type="submit"
+                    <button
+                      class="bg-green-400 text-white text-xs rounded px-1 py-0.5"
+                      type="submit"
                       >Move to {{destinationlist.name}}</button
                     >
                   </form>
@@ -39,7 +37,7 @@ content %}
           {% endfor %}
         </ul>
         {% else %}
-        <p>No cards found</p>
+        <p class="text-xs text-gray-500">No cards found</p>
         {% endif %}
       </li>
       {% endfor %}
