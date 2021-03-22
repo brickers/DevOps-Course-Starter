@@ -1,25 +1,16 @@
 {% extends "layout.html" %} {% block title %}To-Do App{% endblock %} {% block
-content %}
+subtitle %}Search for a board{% endblock%}{% block content %}
 
-<div class="row">
-  <div class="col-md-12">
-    <h2 class="text-xl my-8">Search for a board</h2>
-    <form class="flex flex-row">
-      <input
-        type="text"
-        id="title"
-        name="title"
-        placeholder="Title..."
-        required
-        class="rounded-l border-t-2 border-l-2 border-b-2 border-gray-300 pl-1"
-      /><br />
-      <button
-        formaction="/search/boards"
-        formmethod="post"
-        class="rounded-r bg-green-400 text-white px-1 py-0.5 text-sm"
-        >Submit</button
-      >
-    </form>
-  </div>
-</div>
+<form class="flex flex-row">
+  <input type="text" id="title" name="title" placeholder="Title..." required
+  class="rounded-l border-t-2 border-l-2 border-b-2 border-gray-300 pl-1
+  text-sm"" /><br />
+  <button
+    formaction="/search/boards"
+    formmethod="post"
+    class="rounded-r bg-green-400 text-white px-1 py-0.5 text-sm"
+    >Search</button
+  >
+</form>
+
 {% endblock %}

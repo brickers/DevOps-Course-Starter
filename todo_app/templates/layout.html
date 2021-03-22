@@ -18,8 +18,10 @@
     <div class="container mx-auto">
       <div class="my-16">
         <h1 class="text-3xl"><a href="/">To-Do App</a></h1>
-        <p class="text-xl">Just another to-do app.</p> </div
-      >{% block content %}{% endblock %}
+        <p class="text-xl">Just another to-do app.</p>
+      </div>
+      <h2 class="text-2xl mt-8 mb-2">{% block subtitle%}{% endblock %}</h2>
+      {% block content %}{% endblock %}
     </div>
 
     <script

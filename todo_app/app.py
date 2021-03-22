@@ -11,6 +11,20 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 
+if __name__ == '__main__':
+    app.run()
+
+
+# Global variables ------------------------------------------------------------
+BASE_URL = "https://api.trello.com"
+TRELLO_API_KEY = os.getenv('TRELLO_API_KEY')
+TRELLO_TOKEN = os.getenv('TRELLO_TOKEN')
+auth_header = {
+    "Authorization": f'OAuth oauth_consumer_key="{TRELLO_API_KEY}", oauth_token="{TRELLO_TOKEN}"'}
+
+
+# Routes ----------------------------------------------------------------------
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -20,16 +34,6 @@ def index():
 def add_todo():
     add_item(request.form.get('title'))
     return redirect("/")
-
-
-if __name__ == '__main__':
-    app.run()
-
-BASE_URL = "https://api.trello.com"
-TRELLO_API_KEY = os.getenv('TRELLO_API_KEY')
-TRELLO_TOKEN = os.getenv('TRELLO_TOKEN')
-auth_header = {
-    "Authorization": f'OAuth oauth_consumer_key="{TRELLO_API_KEY}", oauth_token="{TRELLO_TOKEN}"'}
 
 
 @app.route('/search/boards', methods=['POST'])
@@ -66,7 +70,9 @@ def show_board(id):
         return render_template("error.html")
 
 
-# i would prefer this to be a PATCH route as we are only changing one part of the card object, but HTML forms can only submit GET and POST requests
+# i would prefer this to be a PATCH route as we are only changing one part of
+# the card object, but HTML forms can only submit GET and POST requests and I
+# didn't want to start writing javascript
 @app.route("/card/<cardId>/list/<listId>", methods=['POST'])
 def moveCardToList(cardId, listId):
     try:
@@ -81,6 +87,26 @@ def moveCardToList(cardId, listId):
             return redirect(f"/board/{idBoard}")
     except:
         return render_template("error.html")
+
+
+@app.route("/list/<id>/card", methods=['POST'])
+def addCardToList(id):
+    try:
+        name = request.form.get('name')
+        newCard = {
+            "name": name,
+            "idList": id
+        }
+        url = BASE_URL + f"/1/cards"
+        response = requests.post(url, params=newCard, headers=auth_header)
+        if response.ok:
+            idBoard = response.json()['idBoard']
+            return redirect(f"/board/{idBoard}")
+    except:
+        return render_template("error.html")
+
+
+# API helper functions --------------------------------------------------------
 
 
 def getBoard(id):
