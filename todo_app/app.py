@@ -31,10 +31,6 @@ TRELLO_TOKEN = os.getenv('TRELLO_TOKEN')
 auth_header = {
     "Authorization": f'OAuth oauth_consumer_key="{TRELLO_API_KEY}", oauth_token="{TRELLO_TOKEN}"'}
 
-# show homepage with search for board title
-# results will be a list of matching boards, with a link to /board/id
-# /board/id will show our todos
-
 
 @app.route('/search/boards', methods=['POST'])
 def search_boards():
