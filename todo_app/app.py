@@ -69,14 +69,9 @@ def show_board(id):
 def moveCardToList(cardId, listId):
     try:
         card = getCard(cardId)
-        idBoard = card['idBoard']
-        card = {
-            "idList": listId
-        }
-        url = BASE_URL + f"/1/cards/{cardId}"
-        response = requests.put(url, params=card, headers=auth_header)
-        if response.ok:
-            return redirect(f"/board/{idBoard}")
+        responseOK = card.moveToList(listId)
+        if responseOK:
+            return redirect(f"/board/{card.getBoardID()}")
     except:
         return render_template("error.html")
 
@@ -108,7 +103,7 @@ def getBoard(id):
 
 def getCard(id):
     url = BASE_URL + f"/1/cards/{id}"
-    return getTrelloItem(url)
+    return Card(getTrelloItem(url))
 
 
 def getBoardLists(id):
@@ -125,3 +120,34 @@ def getTrelloItem(url):
     response = requests.get(url, headers=auth_header)
     if response.ok:
         return response.json()
+
+
+class Card:
+    def __init__(self, name, id, idList):
+        self.name = name
+        self.id = id
+        self.idList = idList
+
+    def __init__(self, json):
+        self.name = json["name"]
+        self.id = json["id"]
+        self.idList = json["idList"]
+        self.idBoard = json["idBoard"]
+
+    def moveToList(self, idList):
+        self.idList = idList
+        url = BASE_URL + f"/1/cards/{self.id}"
+        params = self.getQueryParams()
+        response = requests.put(url, params=params, headers=auth_header)
+        return response.ok
+
+    def getQueryParams(self):
+        result = {
+            "name": self.name,
+            "id": self.id,
+            "idList": self.idList
+        }
+        return result
+
+    def getBoardID(self):
+        return self.idBoard
