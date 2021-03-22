@@ -34,46 +34,53 @@ auth_header = {
 
 @app.route('/search/boards', methods=['POST'])
 def search_boards():
-    url = BASE_URL + "/1/search"
-    query = request.form.get('title')
-    payload = {"query": query, "idBoards": "mine",
-               "modelTypes": "boards", "partial": "true"}
-    response = requests.get(url, params=payload, headers=auth_header)
-    if response.ok:
-        try:
-            boards = response.json()["boards"]
-            return render_template('boards.html', boards=boards)
-        except:
-            return redirect("/")
+    try:
+        url = BASE_URL + "/1/search"
+        query = request.form.get('title')
+        payload = {"query": query, "idBoards": "mine",
+                   "modelTypes": "boards", "partial": "true"}
+        response = requests.get(url, params=payload, headers=auth_header)
+        if response.ok:
+            try:
+                boards = response.json()["boards"]
+                return render_template('boards.html', boards=boards)
+            except:
+                return redirect("/")
+    except:
+        return render_template("error.html")
 
 
 @app.route("/board/<id>")
 def show_board(id):
-    board = getBoard(id)
-    lists = getBoardLists(id)
+    try:
+        board = getBoard(id)
+        lists = getBoardLists(id)
 
-    for list in lists:
-        cards = getListCards(list["id"])
-        list["cards"] = cards
+        for list in lists:
+            cards = getListCards(list["id"])
+            list["cards"] = cards
 
-    board["lists"] = lists
-    return render_template("board.html", board=board)
+        board["lists"] = lists
+        return render_template("board.html", board=board)
+    except:
+        return render_template("error.html")
 
 
 # i would prefer this to be a PATCH route as we are only changing one part of the card object, but HTML forms can only submit GET and POST requests
 @app.route("/card/<cardId>/list/<listId>", methods=['POST'])
 def moveCardToList(cardId, listId):
-    card = getCard(cardId)
-    idBoard = card['idBoard']
-    card = {
-        "idList": listId
-    }
-    url = BASE_URL + f"/1/cards/{cardId}"
-    response = requests.put(url, params=card, headers=auth_header)
-    if response.ok:
-        return redirect(f"/board/{idBoard}")
-    else:
-        return
+    try:
+        card = getCard(cardId)
+        idBoard = card['idBoard']
+        card = {
+            "idList": listId
+        }
+        url = BASE_URL + f"/1/cards/{cardId}"
+        response = requests.put(url, params=card, headers=auth_header)
+        if response.ok:
+            return redirect(f"/board/{idBoard}")
+    except:
+        return render_template("error.html")
 
 
 def getBoard(id):
