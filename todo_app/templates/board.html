@@ -8,14 +8,25 @@ content %}
 <div class="row">
   <div class="col-md-12">
     <h2>{{board.name}}</h2>
-    {% if board.cards %}
+    {% if board.lists %}
     <ul>
-      {% for card in board.cards %}
-      <li>{{card.name}}</li>
+      {% for list in board.lists %}
+      <li>
+        <h3>{{list.name}}</h3>
+        {% if list.cards %}
+        <ul>
+          {% for card in list.cards %}
+          <li>{{card.name}}</li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>No cards found</p>
+        {% endif %}
+      </li>
       {% endfor %}
     </ul>
     {% else %}
-    <p>No cards found</p>
+    <p>No lists found</p>
     {% endif %}
   </div>
 </div>

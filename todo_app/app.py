@@ -53,20 +53,40 @@ def search_boards():
 
 @app.route("/board/<id>")
 def show_board(id):
-    board_url = BASE_URL + f"/1/boards/{id}"
-    board_response = requests.get(board_url, headers=auth_header)
-    if board_response.ok:
+    board = getBoard(id)
+    lists = getBoardLists(id)
+
+    for list in lists:
+        cards = getListCards(list["id"])
+        list["cards"] = cards
+
+    board["lists"] = lists
+    return render_template("board.html", board=board)
+
+
+def getBoard(id):
+    url = BASE_URL + f"/1/boards/{id}"
+    board = getTrelloItem(url)
+    return board
+
+
+def getBoardLists(id):
+    url = BASE_URL + f"/1/boards/{id}/lists"
+    lists = getTrelloItem(url)
+    return lists
+
+
+def getListCards(id):
+    url = BASE_URL + f"/1/lists/{id}/cards"
+    cards = getTrelloItem(url)
+    return cards
+
+
+def getTrelloItem(url):
+    response = requests.get(url, headers=auth_header)
+    if response.ok:
         try:
-            board = board_response.json()
-            cards_url = BASE_URL + f"/1/boards/{id}/cards"
-            cards_response = requests.get(cards_url, headers=auth_header)
-            if cards_response.ok:
-                try:
-                    board["cards"] = cards_response.json()
-                    return render_template("board.html", board=board)
-                except:
-                    return redirect("/")
+            item = response.json()
+            return item
         except:
-            return redirect("/")
-    else:
-        return redirect("/")
+            pass
