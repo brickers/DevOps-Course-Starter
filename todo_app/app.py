@@ -69,26 +69,20 @@ def show_board(id):
 def moveCardToList(cardId, listId):
     try:
         card = getCard(cardId)
-        responseOK = card.moveToList(listId)
-        if responseOK:
+        card.moveToList(listId)
+        if card.lastResponseOK:
             return redirect(f"/board/{card.getBoardID()}")
     except:
         return render_template("error.html")
 
 
-@app.route("/list/<id>/card", methods=['POST'])
-def addCardToList(id):
+@app.route("/list/<idList>/card", methods=['POST'])
+def addCardToList(idList):
     try:
         name = request.form.get('name')
-        newCard = {
-            "name": name,
-            "idList": id
-        }
-        url = BASE_URL + f"/1/cards"
-        response = requests.post(url, params=newCard, headers=auth_header)
-        if response.ok:
-            idBoard = response.json()['idBoard']
-            return redirect(f"/board/{idBoard}")
+        card = Card(name, idList)
+        if card.lastResponseOK:
+            return redirect(f"/board/{card.getBoardID()}")
     except:
         return render_template("error.html")
 
@@ -123,23 +117,31 @@ def getTrelloItem(url):
 
 
 class Card:
-    def __init__(self, name, id, idList):
-        self.name = name
-        self.id = id
-        self.idList = idList
-
-    def __init__(self, json):
-        self.name = json["name"]
-        self.id = json["id"]
-        self.idList = json["idList"]
-        self.idBoard = json["idBoard"]
+    def __init__(self, *args):
+        if len(args) > 1 and isinstance(args[0], str) and isinstance(args[1], str):
+            self.name = args[0]
+            self.idList = args[1]
+            url = BASE_URL + f"/1/cards"
+            params = {
+                "name": self.name,
+                "idList": self.idList
+            }
+            response = requests.post(url, params=params, headers=auth_header)
+            self.idBoard = response.json()['idBoard']
+            self.lastResponseOK = response.ok
+        elif isinstance(args[0], dict):
+            json = args[0]
+            self.name = json["name"]
+            self.id = json["id"]
+            self.idList = json["idList"]
+            self.idBoard = json["idBoard"]
 
     def moveToList(self, idList):
         self.idList = idList
         url = BASE_URL + f"/1/cards/{self.id}"
         params = self.getQueryParams()
         response = requests.put(url, params=params, headers=auth_header)
-        return response.ok
+        self.lastResponseOK = response.ok
 
     def getQueryParams(self):
         result = {
