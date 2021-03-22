@@ -64,10 +64,32 @@ def show_board(id):
     return render_template("board.html", board=board)
 
 
+@app.route("/card/<cardId>/list/<listId>", methods=['POST'])
+def moveCardToList(cardId, listId):
+    card = getCard(cardId)
+    idBoard = card['idBoard']
+    card = {
+        "idList": listId
+    }
+    url = BASE_URL + f"/1/cards/{cardId}"
+    response = requests.put(url, params=card, headers=auth_header)
+    if response.ok:
+        return redirect(f"/board/{idBoard}")
+    else:
+        print('fuck')
+        return
+
+
 def getBoard(id):
     url = BASE_URL + f"/1/boards/{id}"
     board = getTrelloItem(url)
     return board
+
+
+def getCard(id):
+    url = BASE_URL + f"/1/cards/{id}"
+    card = getTrelloItem(url)
+    return card
 
 
 def getBoardLists(id):

@@ -10,13 +10,32 @@ content %}
     <h2>{{board.name}}</h2>
     {% if board.lists %}
     <ul>
-      {% for list in board.lists %}
+      {% for currentlist in board.lists %}
       <li>
-        <h3>{{list.name}}</h3>
-        {% if list.cards %}
+        <h3>{{currentlist.name}}</h3>
+        {% if currentlist.cards %}
         <ul>
-          {% for card in list.cards %}
-          <li>{{card.name}}</li>
+          {% for card in currentlist.cards %}
+          <li
+            ><h4>{{card.name}}</h4>
+            <div>
+              <ul>
+                {% for destinationlist in board.lists %} {% if destinationlist
+                != currentlist %}
+                <li>
+                  <form
+                    method="post"
+                    action="/card/{{card.id}}/list/{{destinationlist.id}}"
+                  >
+                    <button type="submit"
+                      >Move to {{destinationlist.name}}</button
+                    >
+                  </form>
+                </li>
+                {% endif %} {% endfor %}
+              </ul>
+            </div></li
+          >
           {% endfor %}
         </ul>
         {% else %}
