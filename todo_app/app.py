@@ -1,9 +1,7 @@
 from flask import Flask, request, redirect
 from flask.templating import render_template
-from .data.session_items import get_items, add_item
 import requests
 import os
-import json
 
 from todo_app.flask_config import Config
 
@@ -28,12 +26,6 @@ auth_header = {
 @app.route('/')
 def index():
     return render_template('index.html')
-
-
-@app.route("/todos/submit", methods=['POST'])
-def add_todo():
-    add_item(request.form.get('title'))
-    return redirect("/")
 
 
 @app.route('/search/boards', methods=['POST'])
