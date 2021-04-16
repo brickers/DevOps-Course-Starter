@@ -8,11 +8,6 @@ from todo_app.flask_config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 
-
-if __name__ == '__main__':
-    app.run()
-
-
 # Global variables ------------------------------------------------------------
 BASE_URL = "https://api.trello.com"
 TRELLO_API_KEY = os.getenv('TRELLO_API_KEY')
