@@ -65,11 +65,8 @@ def show_board(id):
 def moveCardToList(cardId, listId):
     try:
         card = api_getCard(cardId)
-        success = api_moveCardToList(card, listId)
-        if success:
-            return redirect(f"/board/{card.getBoardID()}")
-        else:
-            raise RuntimeError  # ensures that the exception path is taken
+        api_moveCardToList(card, listId)
+        return redirect(f"/board/{card.idBoard}")
     except:
         return render_template("error.html")
 
@@ -79,11 +76,8 @@ def addCardToList(idList):
     try:
         name = request.form.get('name')
         card = Card(name, idList)
-        success = api_createNewCard(card)
-        if success:
-            return redirect(f"/board/{card.getBoardID()}")
-        else:
-            raise RuntimeError  # ensures that the exception path is taken
+        api_createNewCard(card)
+        return redirect(f"/board/{card.idBoard}")
     except:
         return render_template("error.html")
 
@@ -121,17 +115,23 @@ def api_getItem(url):
 def api_createNewCard(card):
     url = BASE_URL + f"cards"
     response = requests.post(
-        url, params=card.getQueryParams(), headers=auth_header)
+        url, params=card.json(), headers=auth_header)
     card.setIdBoard(response.json()['idBoard'])
-    return response.ok
+    if response.ok:
+        return
+    else:
+        raise RuntimeError
 
 
 def api_moveCardToList(card, idList):
     card.setIdList(idList)
     url = BASE_URL + f"cards/{card.id}"
     response = requests.put(
-        url, params=card.getQueryParams(), headers=auth_header)
-    return response.ok
+        url, params=card.json(), headers=auth_header)
+    if response.ok:
+        return
+    else:
+        raise RuntimeError
 
 
 class Card:
@@ -147,13 +147,10 @@ class Card:
     def setIdList(self, idList):
         self.idList = idList
 
-    def getQueryParams(self):
+    def json(self):
         result = {
             "name": self.name,
             "id": self.id,
             "idList": self.idList
         }
         return result
-
-    def getBoardID(self):
-        return self.idBoard
