@@ -48,8 +48,8 @@ def show_board(id):
         lists = api_getBoardLists(id)
 
         for list in lists:
-            cards = api_getListCards(list["id"])
-            list["cards"] = cards
+            list["cards"] = map(createCardFromJson,
+                                api_getListCards(list["id"]))
 
         board["lists"] = lists
         return render_template("board.html", board=board)
@@ -93,7 +93,7 @@ def api_getBoard(id):
 def api_getCard(id):
     url = BASE_URL + f"cards/{id}"
     json = api_getItem(url)
-    return Card(json["name"], json["idList"], json["id"], json["idBoard"])
+    return createCardFromJson(json)
 
 
 def api_getBoardLists(id):
@@ -132,6 +132,12 @@ def api_moveCardToList(card, idList):
         return
     else:
         raise RuntimeError
+
+# Card object ------------------------------------------------------------------
+
+
+def createCardFromJson(json):
+    return Card(json["name"], json["idList"], json["id"], json["idBoard"])
 
 
 class Card:
