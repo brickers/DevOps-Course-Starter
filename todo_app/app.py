@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Global variables ------------------------------------------------------------
-BASE_URL = "https://api.trello.com"
+BASE_URL = "https://api.trello.com/1/"
 TRELLO_API_KEY = os.getenv('TRELLO_API_KEY')
 TRELLO_TOKEN = os.getenv('TRELLO_TOKEN')
 auth_header = {
@@ -26,7 +26,7 @@ def index():
 @app.route('/search/boards', methods=['POST'])
 def search_boards():
     try:
-        url = BASE_URL + "/1/search"
+        url = BASE_URL + "search"
         query = request.form.get('title')
         payload = {"query": query, "idBoards": "mine",
                    "modelTypes": "boards", "partial": "true"}
@@ -91,22 +91,22 @@ def addCardToList(idList):
 
 
 def getBoard(id):
-    url = BASE_URL + f"/1/boards/{id}"
+    url = BASE_URL + f"boards/{id}"
     return getTrelloItem(url)
 
 
 def getCard(id):
-    url = BASE_URL + f"/1/cards/{id}"
+    url = BASE_URL + f"cards/{id}"
     return Card(getTrelloItem(url))
 
 
 def getBoardLists(id):
-    url = BASE_URL + f"/1/boards/{id}/lists"
+    url = BASE_URL + f"boards/{id}/lists"
     return getTrelloItem(url)
 
 
 def getListCards(id):
-    url = BASE_URL + f"/1/lists/{id}/cards"
+    url = BASE_URL + f"lists/{id}/cards"
     return getTrelloItem(url)
 
 
@@ -121,7 +121,7 @@ class Card:
         if len(args) > 1 and isinstance(args[0], str) and isinstance(args[1], str):
             self.name = args[0]
             self.idList = args[1]
-            url = BASE_URL + f"/1/cards"
+            url = BASE_URL + f"cards"
             params = {
                 "name": self.name,
                 "idList": self.idList
@@ -138,7 +138,7 @@ class Card:
 
     def moveToList(self, idList):
         self.idList = idList
-        url = BASE_URL + f"/1/cards/{self.id}"
+        url = BASE_URL + f"cards/{self.id}"
         params = self.getQueryParams()
         response = requests.put(url, params=params, headers=auth_header)
         self.lastResponseOK = response.ok
