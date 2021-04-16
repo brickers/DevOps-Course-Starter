@@ -60,6 +60,7 @@ def show_board(id):
 # i would prefer this to be a PATCH route as we are only changing one part of
 # the card object, but HTML forms can only submit GET and POST requests and I
 # didn't want to start writing javascript
+
 @app.route("/card/<cardId>/list/<listId>", methods=['POST'])
 def moveCardToList(cardId, listId):
     try:
@@ -67,6 +68,8 @@ def moveCardToList(cardId, listId):
         card.moveToList(listId)
         if card.lastResponseOK:
             return redirect(f"/board/{card.getBoardID()}")
+        else:
+            raise RuntimeError  # ensures that the exception path is taken
     except:
         return render_template("error.html")
 
@@ -78,6 +81,8 @@ def addCardToList(idList):
         card = Card(name, idList)
         if card.lastResponseOK:
             return redirect(f"/board/{card.getBoardID()}")
+        else:
+            raise RuntimeError  # ensures that the exception path is taken
     except:
         return render_template("error.html")
 
