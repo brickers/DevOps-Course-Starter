@@ -44,11 +44,11 @@ def search_boards():
 @app.route("/board/<id>")
 def show_board(id):
     try:
-        board = getBoard(id)
-        lists = getBoardLists(id)
+        board = api_getBoard(id)
+        lists = api_getBoardLists(id)
 
         for list in lists:
-            cards = getListCards(list["id"])
+            cards = api_getListCards(list["id"])
             list["cards"] = cards
 
         board["lists"] = lists
@@ -64,9 +64,9 @@ def show_board(id):
 @app.route("/card/<cardId>/list/<listId>", methods=['POST'])
 def moveCardToList(cardId, listId):
     try:
-        card = getCard(cardId)
-        card.moveToList(listId)
-        if card.lastResponseOK:
+        card = api_getCard(cardId)
+        success = api_moveCardToList(card, listId)
+        if success:
             return redirect(f"/board/{card.getBoardID()}")
         else:
             raise RuntimeError  # ensures that the exception path is taken
@@ -79,7 +79,8 @@ def addCardToList(idList):
     try:
         name = request.form.get('name')
         card = Card(name, idList)
-        if card.lastResponseOK:
+        success = api_createNewCard(card)
+        if success:
             return redirect(f"/board/{card.getBoardID()}")
         else:
             raise RuntimeError  # ensures that the exception path is taken
@@ -90,58 +91,61 @@ def addCardToList(idList):
 # API helper functions --------------------------------------------------------
 
 
-def getBoard(id):
+def api_getBoard(id):
     url = BASE_URL + f"boards/{id}"
-    return getTrelloItem(url)
+    return api_getItem(url)
 
 
-def getCard(id):
+def api_getCard(id):
     url = BASE_URL + f"cards/{id}"
-    return Card(getTrelloItem(url))
+    json = api_getItem(url)
+    return Card(json["name"], json["idList"], json["id"], json["idBoard"])
 
 
-def getBoardLists(id):
+def api_getBoardLists(id):
     url = BASE_URL + f"boards/{id}/lists"
-    return getTrelloItem(url)
+    return api_getItem(url)
 
 
-def getListCards(id):
+def api_getListCards(id):
     url = BASE_URL + f"lists/{id}/cards"
-    return getTrelloItem(url)
+    return api_getItem(url)
 
 
-def getTrelloItem(url):
+def api_getItem(url):
     response = requests.get(url, headers=auth_header)
     if response.ok:
         return response.json()
 
 
-class Card:
-    def __init__(self, *args):
-        if len(args) > 1 and isinstance(args[0], str) and isinstance(args[1], str):
-            self.name = args[0]
-            self.idList = args[1]
-            url = BASE_URL + f"cards"
-            params = {
-                "name": self.name,
-                "idList": self.idList
-            }
-            response = requests.post(url, params=params, headers=auth_header)
-            self.idBoard = response.json()['idBoard']
-            self.lastResponseOK = response.ok
-        elif isinstance(args[0], dict):
-            json = args[0]
-            self.name = json["name"]
-            self.id = json["id"]
-            self.idList = json["idList"]
-            self.idBoard = json["idBoard"]
+def api_createNewCard(card):
+    url = BASE_URL + f"cards"
+    response = requests.post(
+        url, params=card.getQueryParams(), headers=auth_header)
+    card.setIdBoard(response.json()['idBoard'])
+    return response.ok
 
-    def moveToList(self, idList):
+
+def api_moveCardToList(card, idList):
+    card.setIdList(idList)
+    url = BASE_URL + f"cards/{card.id}"
+    response = requests.put(
+        url, params=card.getQueryParams(), headers=auth_header)
+    return response.ok
+
+
+class Card:
+    def __init__(self, name, idList, idCard=None, idBoard=None):
+        self.name = name
         self.idList = idList
-        url = BASE_URL + f"cards/{self.id}"
-        params = self.getQueryParams()
-        response = requests.put(url, params=params, headers=auth_header)
-        self.lastResponseOK = response.ok
+        self.id = idCard
+        self.idBoard = idBoard
+
+    def setIdBoard(self, idBoard):
+        self.idBoard = idBoard
+
+    def setIdList(self, idList):
+        self.idList = idList
 
     def getQueryParams(self):
         result = {
