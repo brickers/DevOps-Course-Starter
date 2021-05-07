@@ -35,11 +35,13 @@ The `.env` file is used by flask to set environment variables when running `flas
 ## Running the App
 
 Once the all dependencies have been installed, start the Flask app in development mode within the poetry environment by running:
+
 ```bash
 $ poetry run flask run
 ```
 
 You should see output similar to the following:
+
 ```bash
  * Serving Flask app "app" (lazy loading)
  * Environment: development
@@ -49,4 +51,17 @@ You should see output similar to the following:
  * Debugger is active!
  * Debugger PIN: 226-556-590
 ```
+
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
+
+## Trello setup
+
+- Go to Trello.com and sign up for an account, or log in if you already have an account
+- Once signed in, go to https://trello.com/app-key/ and copy the key shown in the gray box at the top. This is your API_KEY.
+- Navigate to https://trello.com/1/authorize?expiration=1day&name=ProjectExercise2&scope=read,write&response_type=token&key={API_KEY}. You will be taken to a page where you are asked to authorise this app to read and write information in your Trello account. Once you click authorise you will be taken to a page with a series of characters shown in red; this is your TOKEN.
+- In the .env file, add two lines under where it says `# Change the following values for local development.`, ensuring the correct copied values are included:
+
+```
+TRELLO_API_KEY={API_KEY}
+TRELLO_TOKEN={TOKEN}
+```

@@ -1,0 +1,14 @@
+{% extends "layout.html" %} {% block title %}To-Do App{% endblock %} {% block
+subtitle %}Search results{% endblock%}{% block content %} {% if boards %}
+<ul>
+  {% for board in boards %}
+  <li
+    ><a href="/board/{{board.id}}" class="text-green-500 hover:underline"
+      >{{board.name}}</a
+    ></li
+  >
+  {% endfor %}
+</ul>
+{% else %}
+<p>No boards found</p>
+{% endif %} {% endblock %}

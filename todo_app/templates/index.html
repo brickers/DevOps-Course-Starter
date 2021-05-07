@@ -1,24 +1,16 @@
 {% extends "layout.html" %} {% block title %}To-Do App{% endblock %} {% block
-content %}
-<div class="jumbotron">
-  <h1 class="display-4">To-Do App</h1>
-  <p class="lead">Just another to-do app.</p>
-</div>
+subtitle %}Search for a board{% endblock%}{% block content %}
 
-<div class="row">
-  <div class="col-md-12">
-    <h2>Items</h2>
-    <ul class="list-group mb-4">
-      {% for item in items %}
-      <li>{{item.title}}</li>
-      {% endfor %}
-    </ul>
-    <h3>Submit new todo</h3>
-    <form>
-      <label for="title">Title:</label><br />
-      <input type="text" id="title" name="title" required /><br />
-      <button formaction="/todos/submit" formmethod="post">Submit</button>
-    </form>
-  </div>
-</div>
+<form class="flex flex-row">
+  <input type="text" id="title" name="title" placeholder="Title..." required
+  class="rounded-l border-t-2 border-l-2 border-b-2 border-gray-300 pl-1
+  text-sm"" /><br />
+  <button
+    formaction="/search/boards"
+    formmethod="post"
+    class="rounded-r bg-green-400 text-white px-1 py-0.5 text-sm"
+    >Search</button
+  >
+</form>
+
 {% endblock %}
