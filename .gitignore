@@ -118,3 +118,7 @@ env/
 
 ### Configuration files ###
 .env
+
+### VSCode
+.vscode/
+.vscode/settings.json
