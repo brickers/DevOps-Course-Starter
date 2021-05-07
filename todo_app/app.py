@@ -4,11 +4,13 @@ import requests
 import os
 
 from todo_app.flask_config import Config
+from .card import Card
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 # Global variables ------------------------------------------------------------
+
 BASE_URL = "https://api.trello.com/1/"
 TRELLO_API_KEY = os.getenv('TRELLO_API_KEY')
 TRELLO_TOKEN = os.getenv('TRELLO_TOKEN')
@@ -133,30 +135,9 @@ def api_moveCardToList(card, idList):
     else:
         raise RuntimeError
 
+
 # Card object ------------------------------------------------------------------
 
 
 def createCardFromJson(json):
     return Card(json["name"], json["idList"], json["id"], json["idBoard"])
-
-
-class Card:
-    def __init__(self, name, idList, idCard=None, idBoard=None):
-        self.name = name
-        self.idList = idList
-        self.id = idCard
-        self.idBoard = idBoard
-
-    def setIdBoard(self, idBoard):
-        self.idBoard = idBoard
-
-    def setIdList(self, idList):
-        self.idList = idList
-
-    def json(self):
-        result = {
-            "name": self.name,
-            "id": self.id,
-            "idList": self.idList
-        }
-        return result
